@@ -11,26 +11,66 @@ import React, {
   View
 } from 'react-native';
 
-var MOCKED_UPC_DATA = [
-  {gtin_code: '2015', gtin_name: "honey", created: "2016-03-06T05:39:43.117157Z"},
-];
-
-var REQUEST_URL = 'https://raw.githubusercontent.com/facebook/react-native/master/docs/MoviesExample.json';
-// https://cafbsite.herokuapp.com/api/auth/upc=52009830171/?format=json
-// {"gtin_code":"52009830171","gtin_name":"honey","created":"2016-03-06T05:39:43.117157Z"}
+var REQUEST_URL = 'https://cafbsite.herokuapp.com/api/products/?format=json';
 
 
 class AwesomeProject extends Component {
-  render() {
-      var upc = MOCKED_UPC_DATA[0];
-      return (
-        <View style={styles.container}>
-          <Text>Code: {upc.gtin_code}</Text>
-          <Text>Name: {upc.gtin_name}</Text>
-          <Text>Created: {upc.created}</Text>
-        </View>
-      );
-  }
+
+    fetchData() {
+      fetch(REQUEST_URL)
+        .then((response) => response.json())
+        .then((responseData) => {
+          this.setState({
+            upcs: responseData.results,
+            count: responseData.count,
+          });
+        })
+        .done();
+    }
+
+    componentDidMount() {
+      this.fetchData();
+    }
+
+    constructor(props) {
+      super(props);
+      this.state = {
+        upcs: null,
+      };
+    }
+
+
+    render() {
+        if (!this.state.upcs) {
+          return this.renderLoadingView();
+        }
+
+        var upc = this.state.upcs[1];
+        return this.renderUPC(upc);
+      }
+
+      renderLoadingView() {
+        return (
+          <View style={styles.container}>
+            <Text>
+              Loading UPC Data...
+            </Text>
+          </View>
+        );
+      }
+
+      renderUPC(upc) {
+        return (
+          <View style={styles.container}>
+            <View style={styles.rightContainer}>
+                <Text>Code: {upc.gtin_code}</Text>
+                <Text>Name: {upc.gtin_name}</Text>
+                <Text>Created: {upc.created}</Text>
+                <Text>Requested</Text>
+            </View>
+          </View>
+        );
+      }
 }
 
 const styles = StyleSheet.create({
