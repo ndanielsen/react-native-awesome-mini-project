@@ -6,6 +6,7 @@
 import React, {
   AppRegistry,
   Component,
+  ListView,
   StyleSheet,
   Text,
   View
@@ -14,7 +15,7 @@ import React, {
 var REQUEST_URL = 'https://cafbsite.herokuapp.com/api/products/?format=json';
 
 
-class AwesomeProject extends Component {
+class AwesomeProject1 extends Component {
 
     fetchData() {
       fetch(REQUEST_URL)
@@ -73,6 +74,72 @@ class AwesomeProject extends Component {
       }
 }
 
+class AwesomeProject extends Component {
+    constructor(props) {
+      super(props);
+      this.state = {
+        dataSource: new ListView.DataSource({
+          rowHasChanged: (row1, row2) => row1 !== row2,
+        }),
+        loaded: false,
+      };
+    }
+
+    componentDidMount() {
+      this.fetchData();
+    }
+
+    fetchData() {
+      fetch(REQUEST_URL)
+        .then((response) => response.json())
+        .then((responseData) => {
+          this.setState({
+            dataSource: this.state.dataSource.cloneWithRows(responseData.results),
+            loaded: true,
+          });
+        })
+        .done();
+    }
+
+    render() {
+      if (!this.state.loaded) {
+        return this.renderLoadingView();
+      }
+
+      return (
+        <ListView
+          dataSource={this.state.dataSource}
+          renderRow={this.renderUPC}
+          style={styles.listView}
+        />
+      );
+    }
+
+    renderLoadingView() {
+      return (
+        <View style={styles.container}>
+          <Text>
+            Loading UPCs...
+          </Text>
+        </View>
+      );
+    }
+
+    renderUPC(upc) {
+      return (
+        <View style={styles.container}>
+            <Text>Code: {upc.gtin_code}</Text>
+            <Text>Name: {upc.gtin_name}</Text>
+            <Text>Created: {upc.created}</Text>
+        </View>
+      );
+    }
+  }
+
+
+
+
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -90,6 +157,10 @@ const styles = StyleSheet.create({
     color: '#333333',
     marginBottom: 5,
   },
+  listView: {
+  paddingTop: 20,
+  backgroundColor: '#F5FCFF',
+},
 });
 
 AppRegistry.registerComponent('AwesomeProject', () => AwesomeProject);
