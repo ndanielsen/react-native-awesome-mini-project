@@ -9,13 +9,14 @@ import React, {
   ListView,
   StyleSheet,
   Text,
-  View
+  TextInput,
+  View,
 } from 'react-native';
 
 var REQUEST_URL = 'https://cafbsite.herokuapp.com/api/products/?format=json';
 
 
-class AwesomeProject1 extends Component {
+class AwesomeProject extends Component {
 
     fetchData() {
       fetch(REQUEST_URL)
@@ -56,6 +57,13 @@ class AwesomeProject1 extends Component {
             <Text>
               Loading UPC Data...
             </Text>
+            <TextInput
+              style={{height: 40, borderColor: 'gray', borderWidth: 1}}
+              onChangeText={(text) => this.setState({text})}
+              value={this.state.text}
+            />
+
+
           </View>
         );
       }
@@ -74,7 +82,7 @@ class AwesomeProject1 extends Component {
       }
 }
 
-class AwesomeProject extends Component {
+class AwesomeProject1 extends Component {
     constructor(props) {
       super(props);
       this.state = {
